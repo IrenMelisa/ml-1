@@ -70,4 +70,4 @@ plt.tight_layout()
 for ax in (ax1, ax2, ax3, ax4):
     ax.get_yaxis().set_visible(False)
     ax.grid()
-#plt.show()
+plt.show()
