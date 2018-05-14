@@ -60,19 +60,20 @@ def accuracy_bcr(y_test, y_pred):
 def CV(df, classifier, nfold, norm='std'):
     result = []
     result_bcr = []
+    col = len(df.columns) - 1
     y = df['class']
     for i in range(nfold):
         train, test = stratified_split(y)
 
         if norm == 'std':
-            X_train = norm_df(df.iloc[train, 0:4])
-            X_test = norm_df(df.iloc[test, 0:4])
+            X_train = norm_df(df.iloc[train, 0:col])
+            X_test = norm_df(df.iloc[test, 0:col])
         elif norm == 'median':
-            X_train = norm_med_arr(df.iloc[train, 0:4])
-            X_test = norm_med_arr(df.iloc[test, 0:4])
+            X_train = norm_med_arr(df.iloc[train, 0:col])
+            X_test = norm_med_arr(df.iloc[test, 0:col])
         else:
-            X_train = df.iloc[train, 0:4]
-            X_test = df.iloc[test, 0:4]
+            X_train = df.iloc[train, 0:col]
+            X_test = df.iloc[test, 0:col]
 
         y_train = y[train]
         y_test = y[test]
@@ -109,27 +110,27 @@ for n in names:
     rf_acc = []
     rf_acc_bcr = []
 
-    result, result_bcr = CV(df, LogisticRegression(), 5, 'none')
+    result, result_bcr = CV(df, LogisticRegression(), 100, 'none')
     lr_acc.append(np.mean(result))
     lr_acc_bcr.append(np.mean(result_bcr))
 
-    result, result_bcr = CV(df, RandomForestClassifier(), 5, 'none')
+    result, result_bcr = CV(df, RandomForestClassifier(), 100, 'none')
     rf_acc.append(np.mean(result))
     rf_acc_bcr.append(np.mean(result_bcr))
 
-    result, result_bcr = CV(df, LogisticRegression(), 5, 'std')
+    result, result_bcr = CV(df, LogisticRegression(), 100, 'std')
     lr_acc.append(np.mean(result))
     lr_acc_bcr.append(np.mean(result_bcr))
 
-    result, result_bcr = CV(df, RandomForestClassifier(), 5, 'std')
+    result, result_bcr = CV(df, RandomForestClassifier(), 100, 'std')
     rf_acc.append(np.mean(result))
     rf_acc_bcr.append(np.mean(result_bcr))
 
-    result, result_bcr = CV(df, LogisticRegression(), 5, 'median')
+    result, result_bcr = CV(df, LogisticRegression(), 100, 'median')
     lr_acc.append(np.mean(result))
     lr_acc_bcr.append(np.mean(result_bcr))
 
-    result, result_bcr = CV(df, RandomForestClassifier(), 5, 'median')
+    result, result_bcr = CV(df, RandomForestClassifier(), 100, 'median')
     rf_acc.append(np.mean(result))
     rf_acc_bcr.append(np.mean(result_bcr))
 
