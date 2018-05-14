@@ -19,11 +19,14 @@ def norm_med_arr(arr):
     return normalized
 
 
-def norm_df(df):
+def norm_df(df, usestd=True):
     result = df.copy()
 
     for feature in df.columns:
-        result[feature] = norm_arr(result[feature])
+        if usestd:
+            result[feature] = norm_arr(result[feature])
+        else:
+            result[feature] = norm_med_arr(result[feature])
 
     return result
 
@@ -65,12 +68,9 @@ def CV(df, classifier, nfold, norm='std'):
     for i in range(nfold):
         train, test = stratified_split(y)
 
-        if norm == 'std':
-            X_train = norm_df(df.iloc[train, 0:col])
-            X_test = norm_df(df.iloc[test, 0:col])
-        elif norm == 'median':
-            X_train = norm_med_arr(df.iloc[train, 0:col])
-            X_test = norm_med_arr(df.iloc[test, 0:col])
+        if norm in ['std', 'median']:
+            X_train = norm_df(df.iloc[train, 0:col], norm == 'std')
+            X_test = norm_df(df.iloc[test, 0:col], norm == 'std')
         else:
             X_train = df.iloc[train, 0:col]
             X_test = df.iloc[test, 0:col]
@@ -87,8 +87,9 @@ def CV(df, classifier, nfold, norm='std'):
     return result, result_bcr
 
 
-url = "data\\pima-indians-diabetes.data.csv"
-names = [['preg', 'plas', 'pres', 'skin', 'class'], ['test', 'mass', 'pedi', 'age', 'class']]
+url = "data/pima-indians-diabetes.data.csv"
+names = ['preg', 'plas', 'pres', 'skin', 'test', 'mass', 'pedi', 'age', 'class']
+cols = [['preg', 'plas', 'pres', 'skin', 'class'], ['test', 'mass', 'pedi', 'age', 'class']]
 
 # Pregnancies - Number of times pregnant - Numeric
 # Glucose - Plasma glucose concentration a 2 hours in an oral glucose tolerance test - Numeric
@@ -101,9 +102,9 @@ names = [['preg', 'plas', 'pres', 'skin', 'class'], ['test', 'mass', 'pedi', 'ag
 # Outcome - Class variable (0 or 1) - Nu;meric
 
 
-for n in names:
-    print('names: ' + str(n))
-    df = pd.read_csv(url, names=n)
+for c in cols:
+    print('cols: ' + str(c))
+    df = pd.read_csv(url, names=names)[c]
 
     lr_acc = []
     lr_acc_bcr = []
